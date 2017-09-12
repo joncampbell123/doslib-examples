@@ -54,6 +54,7 @@ int main(int argc,char **argv) {
      * tell this program which card to use if you like. */
     {
         uint16_t vendor,device;
+        uint32_t classcode;
         uint8_t bus,dev;
 
         for (bus=0;bus <= pci_bios_last_bus;bus++) {
@@ -69,6 +70,18 @@ int main(int argc,char **argv) {
                 /* device ID */
                 device = pci_read_cfgw(bus,dev,/*func*/0,/*byte offset*/0x02);
                 if (device == 0xFFFF) continue; /* if nothing there, move on */
+
+                /* class code and revision ID */
+                /* bits [31:8] = class code
+                 * bits  [7:0] = revision ID */
+                classcode = pci_read_cfgl(bus,dev,/*func*/0,/*byte offset*/0x08);
+                /* we're looking for a display controller (class=0x03), VGA compatible (subclass=0x00 progif=0x00) */
+                if ((classcode >> 8UL) != 0x030000) continue;
+                /*                        ^ CCSSPP
+                 *
+                 *                        CC = class
+                 *                        SS = subclass
+                 *                        PP = programming interface */
 
                 if (vendor == pci_want_vendor && device == pci_want_device) {
                     /* found it! stop the scan! */
