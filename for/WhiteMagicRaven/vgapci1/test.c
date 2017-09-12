@@ -86,6 +86,37 @@ int main(int argc,char **argv) {
     }
 
     printf("PCI device of interest is on bus %u, device %u, function 0\n",pci_found_bus,pci_found_device);
+
+    /* this is here to show you how to read the Base Address Registers (BARs)
+     * to locate the memory and/or I/O resources. there's a probing procedure
+     * as well to determine their size, and you can relocate the device if
+     * you wish by writing the BARs. for this example, only reading is performed.
+     *
+     * WARNING: this code ignores the extension to the PCI standard where two
+     *          BARs can combine together into a 64-bit memory address. */
+    {
+        unsigned char bar=0;
+        uint32_t b;
+
+        for (bar=0;bar < 6;bar++) {
+            b = pci_read_cfgl(pci_found_bus,pci_found_device,/*func*/0,/*byte offset*/0x10U+(bar*4U));
+            if (b == 0xFFFFFFFFUL) continue; /* nothing here */
+            if (b == 0x00000000UL) continue; /* nothing here or not assigned */
+
+            if (b & 1) {
+                /* I/O port */
+                printf("BAR%u: I/O port at 0x%04X\n",bar,(unsigned int)(b & 0xFFFCUL));
+            }
+            else {
+                /* memory resource */
+                printf("BAR%u: %s memory at 0x%04X\n",
+                    bar,
+                    (b & 8) ? "Prefetchable" : "Non-prefetchable",
+                    (unsigned int)(b & 0xFFFFFFF0UL));
+            }
+        }
+    }
+
 	return 0;
 }
 
