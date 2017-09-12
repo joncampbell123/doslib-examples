@@ -8,3 +8,22 @@ Prior to running make, you will need to use your Linux
 shell to source the Open Watcom environment variables
 for compile to work.
 
+If you use setenv.sh from Open Watcom, then locate your
+Open Watcom binary build directory.
+
+If Open Watcom is in /opt/rel/watcom, then:
+
+. /opt/rel/watcom
+
+You may also consider using the owenv.sh script in DOSLIB:
+
+. doslib/extprac/owenv.sh
+
+This will set the environment variables in your current shell
+to use Open Watcom tools.
+
+They will remain until you exit your shell. They are not
+permanent.
+
+This example only supports dev on Linux, sorry.
+
