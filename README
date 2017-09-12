@@ -2,3 +2,9 @@ This repository holds example code that can be used to
 develop projects using DOSLIB as a submodule (much like
 Project 16 does already).
 
+All samples here require Open Watcom 2.0.
+
+Prior to running make, you will need to use your Linux
+shell to source the Open Watcom environment variables
+for compile to work.
+
