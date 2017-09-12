@@ -1,6 +1,12 @@
 #!/usr/bin/perl
 
 $project = `git config --get remote.origin.url | sed -e 's/\\/\$//' | sed -e 's/^.*\\///' | sed -e 's/\\.git\$//'`;
+chomp $project;
+die if $project eq "";
+
+$branch = `git branch | grep '^\*' | sed -e 's/^\* //'`; chomp $branch;
+$branchfname = "-branch-$branch" if $branch ne "";
+print "Current branch: $branch\n";
 
 if (!open(S,"git --no-pager log --max-count=1 |")) { exit 1; }
 my $lcommit = "x";
@@ -60,9 +66,8 @@ if (!( -f "$filename.xz" )) {
     while ($fn = <XX>) {
         chomp $fn;
         $fn =~ s/^\.\///; # find puts ./ in front, remove it
-        next unless -d $fn;
-#       print "$fn\n";
-        $list .= "doslib/$fn ";
+        next unless -e $fn;
+        $list .= "$project/$fn ";
     }
     close(XX);
     die if $list eq '';
